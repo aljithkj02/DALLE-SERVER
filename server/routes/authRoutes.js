@@ -1,5 +1,11 @@
 import { Router } from 'express'
-import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
+
+const generateToken = (userObj) => {
+    const token = jwt.sign(userObj, process.env.JWT_CLIENT_SECRET);
+    return token;
+}
 
 import User from '../mongodb/models/user.js'
 
@@ -19,10 +25,16 @@ router.post('/signup', async (req, res) => {
                 message: 'User with this email id is already present!'
             });
         }
+
         const newUser = await User.create({
             name, email, password
         })
-        res.status(200).json({ success: true, message: 'Signup successful'});
+
+        const token = generateToken({
+            email,
+            _id: newUser._id
+        })
+        res.status(200).json({ success: true, message: 'Signup successful', name, token});
     } catch (err) {
         res.status(500).json({ success: false, message: err.message});
     }
@@ -45,7 +57,12 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        res.status(200).json({ success: true, message: 'Login successful' });
+        const token = generateToken({
+            email,
+            _id: userData._id
+        })
+
+        res.status(200).json({ success: true, message: 'Login successful', name: userData.name, token });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message});
     }

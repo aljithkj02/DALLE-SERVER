@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 
 import Post from '../mongodb/models/post.js';
+import authorize from '../middleware/authorization.js'
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', authorize, async (req, res) => {
     try {
         const { name, prompt, photo } = req.body;
         const photoUrl = await cloudinary.uploader.upload(photo);
