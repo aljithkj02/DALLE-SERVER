@@ -33,12 +33,23 @@ router.post('/', authorize, async (req, res) => {
         const newPost = await Post.create({
             name,
             prompt,
-            photo: photoUrl.url
+            photo: photoUrl.url,
+            author_id: req.user._id
         })
 
         res.status(200).json({ success: true, data: newPost });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
+    }
+})
+
+router.get('/profile-posts', authorize, async (req, res) => {
+    try {
+        const posts = await Post.find({ author_id: req.user._id});
+
+        res.status(200).json({ success: true, data: posts });
+    } catch (err) {
+        res.status(500).json({ success: false, data: err.message });
     }
 })
 
