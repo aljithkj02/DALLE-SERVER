@@ -27,11 +27,11 @@ router.get('/', async (req, res) => {
 
 router.post('/', authorize, async (req, res) => {
     try {
-        const { name, prompt, photo } = req.body;
+        const { prompt, photo } = req.body;
         const photoUrl = await cloudinary.uploader.upload(photo);
 
         const newPost = await Post.create({
-            name,
+            name: req.user.name,
             prompt,
             photo: photoUrl.url,
             author_id: req.user._id
@@ -40,6 +40,17 @@ router.post('/', authorize, async (req, res) => {
         res.status(200).json({ success: true, data: newPost });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
+    }
+})
+
+router.delete('/:id', authorize, async (req, res) => {
+    try {
+        const id = req.params.id;
+        let deletedPost = await Post.findOneAndDelete({ _id: id });
+
+        res.status(200).json({ success: true, data: deletedPost });
+    } catch (err) {
+        res.status(500).json({ success: false, data: err.message });
     }
 })
 
