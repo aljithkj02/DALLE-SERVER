@@ -15,6 +15,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
+// POST 
 router.get('/', async (req, res) => {
     let skip = req.query.skip ? Number(req.query.skip) : 0;
     let limit = req.query.limit ? Number(req.query.limit) : 5;
@@ -78,4 +79,33 @@ router.get('/search', async (req, res) => {
     }
 })
 
+router.get('/getone/:id', authorize, async (req, res) => {
+    try {
+        let id = req.params.id;
+        const post = await Post.findOne({ _id: id});
+
+        res.status(200).json({ success: true, data: post });
+    } catch (err) {
+        res.status(500).json({ success: false, data: err.message });
+    }
+})
+
+// COMMENT 
+router.post('/comment', authorize, async (req, res) => {
+    try {
+        const { comment, id } = req.body;
+        let post = await Post.findOne({ _id: id });
+        let user = await Post.findOne({author_id: req.user._id});
+        let commentObj = {
+            name: req.user.name,
+            comment,
+            image: user.photo
+        }
+
+        res.status(200).json({ success: true, data: commentObj });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+})
 export default router; 
