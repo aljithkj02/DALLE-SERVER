@@ -96,12 +96,13 @@ router.post('/comment', authorize, async (req, res) => {
         const { comment, id } = req.body;
         let post = await Post.findOne({ _id: id });
         let user = await Post.findOne({author_id: req.user._id});
-        let commentObj = {
+        let commentObj = { 
             name: req.user.name,
             comment,
-            image: user.photo
+            image: user?.photo || null
         }
-
+        post.comments.push(commentObj);
+        let result = await Post.findOneAndUpdate({ _id: id }, post)
         res.status(200).json({ success: true, data: commentObj });
     } catch (err) {
         console.log(err);
