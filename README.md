@@ -19,7 +19,7 @@
 <br/>
 
 ## Usage
-### To use visualizeUI, follow these steps:, generage these steps too
+### To use visualizeUI, follow these steps:
 
 <br/>
 <ol>
