@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     let skip = req.query.skip ? Number(req.query.skip) : 0;
     let limit = req.query.limit ? Number(req.query.limit) : 5;
     try {
-        const posts = await Post.find({}).skip(skip).limit(limit);
+        const posts = await Post.find({}).skip(skip).limit(limit).sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, data: posts });
     } catch (err) {
@@ -59,7 +59,7 @@ router.delete('/:id', authorize, async (req, res) => {
 
 router.get('/profile-posts', authorize, async (req, res) => {
     try {
-        const posts = await Post.find({ author_id: req.user._id});
+        const posts = await Post.find({ author_id: req.user._id}).sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, data: posts });
     } catch (err) {
